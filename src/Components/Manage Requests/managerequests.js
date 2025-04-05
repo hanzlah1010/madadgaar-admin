@@ -27,7 +27,7 @@ const requests = [
 export default function ManageRequests() {
   const [requestList, setRequestList] = useState(requests);
   const [count, setCount] = useState(0);
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
 
 
   useEffect(() => {
@@ -47,8 +47,8 @@ export default function ManageRequests() {
     req.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
     req.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  
-  
+
+
 
   return (
     <div className="p-4">
@@ -77,9 +77,10 @@ export default function ManageRequests() {
                     <td className="text-muted">{req.type}</td>
                     <td className="text-muted">{req.location}</td>
                     <td>2km</td>
-                    <td className={`fw-bold ${req.status === "Pending" ? "text-warning" : "text-success"}`}>
-                      {req.status === "Pending" ? "⏳ Pending" : "✅ Completed"}
+                    <td className={`fw-bold ${req.status === "Pending" ? "text-warning" : req.status === "Completed" ? "text-success" : "text-primary"}`}>
+                      {req.status === "Pending" ? "⏳ Pending" : req.status === "Completed" ? "✅ Completed" : req.status}
                     </td>
+
                     <td>
                       {req.status !== "Completed" ? (
                         <button
@@ -101,18 +102,18 @@ export default function ManageRequests() {
       </div>
 
       <h2 className="text-center mt-4">🚑 All Requests </h2>
-      
+
 
       <div className="table-responsive mx-auto" style={{ maxWidth: "500px" }}>
-      <div className="mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search by name, type, or location..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by name, type, or location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <table className="table table-bordered table-striped shadow-sm rounded">
           <thead className="table-dark">
             <tr>
@@ -124,17 +125,17 @@ export default function ManageRequests() {
             </tr>
           </thead>
           <tbody>
-          {filteredRequests.map((req) => (
-  <tr key={req.id} className="align-middle text-center">
-    <td className="fw-bold">{req.patient}</td>
-    <td className="text-muted">{req.type}</td>
-    <td className="text-muted">{req.location}</td>
-    <td>2km</td>
-    <td className={`fw-bold ${req.status === "Pending" ? "text-warning" : "text-success"}`}>
-      {req.status}
-    </td>
-  </tr>
-))}
+            {filteredRequests.map((req) => (
+              <tr key={req.id} className="align-middle text-center">
+                <td className="fw-bold">{req.patient}</td>
+                <td className="text-muted">{req.type}</td>
+                <td className="text-muted">{req.location}</td>
+                <td>2km</td>
+                <td className={`fw-bold ${req.status === "Pending" ? "text-warning" : "text-success"}`}>
+                  {req.status === "Pending" ? "In Progress" : req.status}
+                </td>
+              </tr>
+            ))}
 
           </tbody>
         </table>

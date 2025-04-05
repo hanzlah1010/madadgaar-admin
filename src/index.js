@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import Auth from "./Components/Login/login";
+import Auth from "./Components/Users/login";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { auth } from "./Firestore/firestore"; // ✅ Import Firebase auth
@@ -11,15 +11,15 @@ const RootComponent = () => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user); // ✅ Set user state when authentication changes
+      setUser(user); 
     });
 
-    return () => unsubscribe(); // ✅ Cleanup listener
+    return () => unsubscribe(); 
   }, []);
 
   return (
     <BrowserRouter>
-      {user ? <App /> : <Auth />} {/* ✅ If user exists, show App, otherwise show Auth */}
+      {user ? <App /> : <Auth />} 
     </BrowserRouter>
   );
 };

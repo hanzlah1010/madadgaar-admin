@@ -4,8 +4,9 @@ import Dashboard from "./Components/Dashboard/dashboard";
 import LiveTracking from "./Components/Live Tracking/LiveTracking";
 import ManageRequests from "./Components/Manage Requests/managerequests";
 import Ambulances from "./Components/Ambulances/ambulance";
-import Auth from "./Components/Login/login"; // ✅ Import Auth component
+import Auth from "./Components/Users/login"; 
 import Profile from "./Components/Profile/Profile";
+import Signup  from "./Components/Users/Signup";
 
 const Reports = () => <h1 className="p-5">Reports</h1>;
 const Settings = () => <h1 className="p-5">Settings</h1>;
@@ -21,11 +22,13 @@ function App() {
 
         <Route path="/profile" element={<Profile />} />
           <Route path="/ambulances" element={<Ambulances />} />
+          <Route path="/signup" element={<Signup />} />
+
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/livetracking" element={<LiveTracking />} />
           <Route path="/managerequests" element={<ManageRequests />} />
-          <Route path="/auth" element={<Auth />} /> {/* ✅ Add Auth Route */}
+          <Route path="/auth" element={<Auth />} /> 
         </Routes>
       </div>
     </div>
