@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import {
   BarChart,
   Bar,
@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { GraphFilterOptions } from "../../schemas/graph";
 
 const BarGraph = ({ onSelectChange, dataMap }) => {
   const [selectedValue, setSelectedValue] = useState("DAILY");
@@ -43,9 +44,11 @@ const BarGraph = ({ onSelectChange, dataMap }) => {
             value={selectedValue}
             onChange={handleSelectChange}
           >
-            <option value="DAILY">Daily</option>
-            <option value="MONTHLY">Monthly</option>
-            <option value="YEARLY">Yearly</option>
+            {Object.entries(GraphFilterOptions).map(([key, val]) => (
+              <option key={key} value={key}>
+                {val}
+              </option>
+            ))}
           </select>
         </div>
 

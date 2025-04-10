@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { HelpRequest } from "../../schemas/requests";
 
-const requests = [
+const requests: HelpRequest[] = [
   {
     id: 1,
     patient: "Ali Khan",
@@ -152,7 +153,7 @@ export default function ManageRequests() {
     setCount(requestList.filter((req) => req.status !== "Completed").length);
   }, [requestList]);
 
-  const handleAccept = (id) => {
+  const handleAccept = (id: number) => {
     setRequestList((prevRequests) =>
       prevRequests.map((req) =>
         req.id === id ? { ...req, status: "Completed" } : req

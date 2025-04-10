@@ -1,8 +1,9 @@
 import React from "react";
 
 import { FaAmbulance, FaUsers, FaExclamationTriangle } from "react-icons/fa";
+import { HelpRequest } from "../../schemas/requests";
 
-const requests = [
+const requests: HelpRequest[] = [
   {
     id: 1,
     patient: "Ali Khan",
@@ -144,7 +145,7 @@ const requests = [
     type: "Bike",
   },
 ];
-const Cards = ({ usersCount }) => {
+const Cards = ({ usersCount }: { usersCount: string }) => {
   const pendingRequests = requests.filter(
     (req) => req.status !== "Completed"
   ).length;

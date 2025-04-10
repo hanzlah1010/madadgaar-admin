@@ -9,9 +9,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import "bootstrap/dist/css/bootstrap.min.css"; 
+import "bootstrap/dist/css/bootstrap.min.css";
+import { AmbulanceGraphVal } from "../../schemas/graph";
 
-const data = [
+const data: AmbulanceGraphVal[] = [
   { name: "Jan", added: 5, removed: 2 },
   { name: "Feb", added: 7, removed: 3 },
   { name: "Mar", added: 6, removed: 1 },
@@ -31,8 +32,6 @@ const MyGraph = () => {
             <option>Month</option>
             <option>Yearly</option>
           </select>
-
-          
         </div>
 
         <div style={{ width: "100%", height: "200px" }}>

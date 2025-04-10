@@ -4,10 +4,13 @@ import MyGraph from "../Graph/linegraph";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cards from "./cards";
 import apiController from "../../api/apiController";
+import { GraphFilterOptions } from "../../schemas/graph";
 
 const Dashboard = () => {
   const [usersCount, setUsersCount] = useState("---");
-  const [userChartType, setUserChartType] = useState("DAILY");
+  const [userChartType, setUserChartType] = useState<GraphFilterOptions>(
+    GraphFilterOptions.DAILY
+  );
   const [chartData, setChartData] = useState({}); // No type needed for JavaScript
 
   useEffect(() => {
@@ -15,7 +18,7 @@ const Dashboard = () => {
       try {
         if (usersCount === "N/A") setUsersCount("---");
         const response = await apiController.get(
-          `/admin/usersInsights?chartType=${userChartType}`
+          `/admin/usersInsights?chartType=${userChartType.toUpperCase()}`
         ); // Await the API call.
 
         // Set total user count
