@@ -35,7 +35,7 @@ const LiveTracking = () => {
   }, []);
 
   return (
-    <LoadScript googleMapsApiKey="AIzaSyBJFyPYOmsQVttUAXsj8Wa5qQ29oUcGJhg">
+    <LoadScript googleMapsApiKey={import.meta.env?.VITE_MAPS_API_KEY || ""}>
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
         center={location || defaultCenter}
@@ -44,7 +44,7 @@ const LiveTracking = () => {
           mapRef.current = map;
         }}
       >
-        {location && <Marker position={defaultCenter}></Marker>}
+        {location && <Marker position={location}></Marker>}
       </GoogleMap>
     </LoadScript>
   );

@@ -18,3 +18,11 @@
     overflow-y: auto; /* Scrollable content if needed */
   }
   
+    body.modal-open {
+      overflow: hidden;
+    }
+  
+    .modal-open .modal {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
