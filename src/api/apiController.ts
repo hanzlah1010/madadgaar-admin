@@ -1,4 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from "axios";
+import { io } from "socket.io-client";
 import { auth } from "../Firestore/firestore";
 import { User } from "firebase/auth";
 
@@ -47,5 +48,12 @@ const apiController = {
   put: (url: string, data: any, config = {}) => api.put(url, data, config),
   delete: (url: string, config = {}) => api.delete(url, config),
 };
+
+export const apiSocket = io(import.meta.env.VITE_SOCKET_BASE_URL, {
+  autoConnect: false,
+  extraHeaders: {
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgxLCJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjM5MDIyfQ.KLdm8pD_ISVF6aBj0zDc7kTnHv6lCp1OV4cNtnYvQXI`,
+  },
+});
 
 export default apiController;

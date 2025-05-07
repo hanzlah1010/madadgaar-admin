@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import { Ambulance } from "../../schemas/ambulance";
-import apiController from "../../api/apiController";
+import apiController, { apiSocket } from "../../api/apiController";
 
 const AmbulancesScreen = () => {
   // State for ambulance data
@@ -187,10 +187,11 @@ const AmbulancesScreen = () => {
         lastMaintenanceAt: formData.lastMaintenanceAt,
       };
 
-      const response = await apiController.post(
-        "/admin/vehicles",
-        addVehicleData
-      );
+      const response = await apiController.post("/admin/vehicles", {
+        ...addVehicleData,
+        lat: 60,
+        lang: 70,
+      });
       if (response.status === 201) {
         closeAddVehicleModal();
         // Refresh the list
@@ -382,6 +383,39 @@ const AmbulancesScreen = () => {
   // Initial data load
   useEffect(() => {
     fetchAmbulances();
+
+    const updateMatchingVehicle = (driverId: number, isOnline: boolean) => {
+      if (isLoading) {
+        return;
+      }
+      setAmbulances((prev) =>
+        prev.map((vehicle) => {
+          if (vehicle?.driver?.id === driverId) {
+            return {
+              ...vehicle,
+              driver: { ...vehicle.driver, isOnline: isOnline },
+            };
+          }
+          return vehicle;
+        })
+      );
+      console.log("Updated vehicle status:", driverId, isOnline);
+    };
+
+    const socket = apiSocket.connect();
+    socket.on("error", (err) => {
+      console.error("Socket connection error:", err);
+    });
+    socket.on("connected", (payload) => {
+      console.log("User connected:", payload);
+      const { userId } = payload as { userId: number };
+      updateMatchingVehicle(userId, true);
+    });
+    socket.on("disconnected", (payload) => {
+      console.log("User disconnected:", payload);
+      const { userId } = payload as { userId: number };
+      updateMatchingVehicle(userId, false);
+    });
   }, []);
 
   // Debounce search input to avoid excessive API calls
@@ -744,6 +778,22 @@ const AmbulancesScreen = () => {
                     >
                       <h5 className="card-title mb-0 text-truncate">
                         {vehicle?.plateNumber}
+                        {vehicle?.driver?.isOnline && (
+                          <span
+                            title="Crew Online"
+                            style={{
+                              display: "inline-block",
+                              width: "10px",
+                              height: "10px",
+                              borderRadius: "50%",
+                              marginLeft: "8px",
+                              backgroundColor: "#28a745",
+                              border: "2px solid #fff",
+                              boxShadow: "0 0 2px #0002",
+                              verticalAlign: "middle",
+                            }}
+                          ></span>
+                        )}
                       </h5>
                       <span
                         className={`badge bg-${config.color} d-flex align-items-center`}
@@ -783,9 +833,9 @@ const AmbulancesScreen = () => {
                           <div className="col-1">
                             <i className="bi bi-telephone-fill text-muted"></i>
                           </div>
-                          <div className="col-11">
+                          <div className="col-11 d-flex align-items-center">
                             <strong>Contact:</strong>{" "}
-                            {vehicle.assignedTo.phone || "N/A"}
+                            {vehicle?.driver?.phone || "N/A"}
                           </div>
                         </div>
                       )}
@@ -970,21 +1020,21 @@ const AmbulancesScreen = () => {
                           <div className="row mb-2">
                             <div className="col-5 text-muted">Assigned To:</div>
                             <div className="col-7">
-                              {selectedVehicle.assignedTo.name}
+                              {selectedVehicle?.driver?.name || "N/A"}
                             </div>
                           </div>
                           <div className="row mb-2">
-                            <div className="col-5 text-muted">
-                              Station City:
-                            </div>
+                            <div className="col-5 text-muted">Station:</div>
                             <div className="col-7">
-                              {selectedVehicle.assignedTo.city}
+                              {selectedVehicle.assignedTo?.address +
+                                ", " +
+                                selectedVehicle.assignedTo?.city}
                             </div>
                           </div>
                           <div className="row mb-2">
                             <div className="col-5 text-muted">Contact:</div>
                             <div className="col-7">
-                              {selectedVehicle.assignedTo.phone || "N/A"}
+                              {selectedVehicle?.driver?.phone || "N/A"}
                             </div>
                           </div>
                         </>
