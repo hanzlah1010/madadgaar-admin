@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import { Ambulance } from "../../schemas/ambulance";
 import apiController, { apiSocket } from "../../api/apiController";
@@ -297,7 +297,6 @@ const AmbulancesScreen = () => {
       }
 
       const data = response.data;
-      console.log("API response:", data);
 
       // Update states with response data
       setAmbulances(data.vehicles || []);
@@ -383,23 +382,28 @@ const AmbulancesScreen = () => {
   // Initial data load
   useEffect(() => {
     fetchAmbulances();
+  }, []);
 
+  useEffect(() => {
+    if (isLoading) return; // Don't run if still loading
     const updateMatchingVehicle = (driverId: number, isOnline: boolean) => {
-      if (isLoading) {
-        return;
-      }
+      // Don't update if still loading
+
       setAmbulances((prev) =>
         prev.map((vehicle) => {
+          // Check if the vehicle has a driver and if the driver.id matches driverId
           if (vehicle?.driver?.id === driverId) {
             return {
               ...vehicle,
-              driver: { ...vehicle.driver, isOnline: isOnline },
+              driver: {
+                ...vehicle.driver,
+                isOnline: isOnline,
+              },
             };
           }
           return vehicle;
         })
       );
-      console.log("Updated vehicle status:", driverId, isOnline);
     };
 
     const socket = apiSocket.connect();
@@ -407,16 +411,18 @@ const AmbulancesScreen = () => {
       console.error("Socket connection error:", err);
     });
     socket.on("connected", (payload) => {
-      console.log("User connected:", payload);
       const { userId } = payload as { userId: number };
       updateMatchingVehicle(userId, true);
     });
     socket.on("disconnected", (payload) => {
-      console.log("User disconnected:", payload);
       const { userId } = payload as { userId: number };
       updateMatchingVehicle(userId, false);
     });
-  }, []);
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [isLoading]);
 
   // Debounce search input to avoid excessive API calls
   useEffect(() => {

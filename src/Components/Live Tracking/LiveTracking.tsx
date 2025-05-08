@@ -186,13 +186,8 @@ const MapLegend = () => {
 
 const LiveTracking = () => {
   const mapRef = useRef<google.maps.Map | null>(null);
-  const hasCenteredMap = useRef(false);
 
-  const [location, setLocation] = useState<google.maps.LatLngLiteral | null>(
-    null
-  );
   const [ambulanceLocations, setAmbulanceLocations] = useState<Ambulance[]>([]);
-  const [locationError, setLocationError] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedAmbulance, setSelectedAmbulance] = useState<Ambulance | null>(
@@ -230,14 +225,15 @@ const LiveTracking = () => {
 
   useEffect(() => {
     fetchAmbulanceLocations();
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) return;
 
     const updateVehicleLocation = (
       driverId: number,
       newLocationData: { lat: number; lang: number; timestamp: string }
     ) => {
-      if (isLoading) {
-        return;
-      }
       setAmbulanceLocations((prev) =>
         prev.map((vehicle) => {
           if (vehicle?.driver?.id === driverId) {
@@ -255,9 +251,6 @@ const LiveTracking = () => {
     };
 
     const updateMatchingVehicle = (driverId: number, isOnline: boolean) => {
-      if (isLoading) {
-        return;
-      }
       setAmbulanceLocations((prev) =>
         prev.map((vehicle) => {
           if (vehicle?.driver?.id === driverId) {
@@ -292,44 +285,14 @@ const LiveTracking = () => {
       const { userId } = payload as { userId: number };
       updateMatchingVehicle(userId, false);
     });
-  }, []);
 
-  useEffect(() => {
-    if (navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const newLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          setLocation(newLocation);
-          setLocationError(null);
-
-          if (mapRef.current && !hasCenteredMap.current) {
-            mapRef.current.panTo(newLocation);
-            hasCenteredMap.current = true;
-          }
-        },
-        (error) => {
-          setLocationError(`Location access denied: ${error.message}`);
-        },
-        { enableHighAccuracy: true, maximumAge: 0 }
-      );
-
-      return () => navigator.geolocation.clearWatch(watchId);
-    } else {
-      setLocationError("Geolocation is not supported by this browser");
-    }
-  }, []);
+    return () => {
+      socket.disconnect();
+    };
+  }, [isLoading]);
 
   return (
     <div>
-      {locationError && (
-        <div className="alert alert-warning m-2">
-          {locationError} - Map will show default location instead.
-        </div>
-      )}
-
       {apiError && (
         <div className="alert alert-danger m-2">
           {apiError}
@@ -356,22 +319,12 @@ const LiveTracking = () => {
       <LoadScript googleMapsApiKey={import.meta.env?.VITE_MAPS_API_KEY || ""}>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          // center={location || defaultCenter}
+          center={defaultCenter}
           zoom={15}
           onLoad={(map) => {
             mapRef.current = map;
           }}
         >
-          {/* {location && (
-            <Marker
-              position={location}
-              icon={{
-                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              }}
-              title="Your location"
-            />
-          )} */}
-
           {Array.isArray(ambulanceLocations) &&
             ambulanceLocations.map((ambulance) => (
               <Marker
