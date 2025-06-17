@@ -52,8 +52,10 @@ const apiController = {
 export const apiSocket = io(import.meta.env.VITE_SOCKET_BASE_URL, {
   autoConnect: false,
   extraHeaders: {
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgxLCJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjM5MDIyfQ.KLdm8pD_ISVF6aBj0zDc7kTnHv6lCp1OV4cNtnYvQXI`,
+    Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjgxLCJyb2xlIjoiYWRtaW4iLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwiaWF0IjoxNTE2MjM5MDIyfQ.KLdm8pD_ISVF6aBj0zDc7kTnHv6lCp1OV4cNtnYvQXI`, // TODO: Replace with dynamic token
   },
 });
+
+export const apiSocketAuthUserId = 81; // TODO: Replace with dynamic user ID
 
 export default apiController;

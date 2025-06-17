@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -12,17 +12,16 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import { GraphFilterOptions } from "../../schemas/graph";
 
-const BarGraph = ({ onSelectChange, dataMap }) => {
-  const [selectedValue, setSelectedValue] = useState("DAILY");
+const BarGraph = ({ onSelectChange, dataMap, selectedType }) => {
   const [chartData, setChartData] = useState([]);
 
+  // Handle dropdown change
   const handleSelectChange = (event) => {
     const newValue = event.target.value;
-    setSelectedValue(newValue);
-    onSelectChange(newValue); // Tell parent about the change
+    onSelectChange(newValue);
   };
 
-  // Convert dataMap (Record<string, number>) to array format for Recharts
+  // Convert dataMap to chart data format
   useEffect(() => {
     if (dataMap) {
       const transformed = Object.entries(dataMap).map(([key, value]) => ({
@@ -35,35 +34,31 @@ const BarGraph = ({ onSelectChange, dataMap }) => {
 
   return (
     <div className="container-fluid">
-      <h3 className="text-center mt-3">Users Added</h3>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <select
+          className="form-select w-auto"
+          value={selectedType}
+          onChange={handleSelectChange}
+        >
+          {Object.values(GraphFilterOptions).map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      <div className="card shadow-lg p-4 mt-3">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <select
-            className="form-select w-auto"
-            value={selectedValue}
-            onChange={handleSelectChange}
-          >
-            {Object.entries(GraphFilterOptions).map(([key, val]) => (
-              <option key={key} value={key}>
-                {val}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ width: "100%", height: "200px" }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="added" fill="blue" name="Users Added" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+      <div style={{ width: "100%", height: "250px" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis allowDecimals={false} />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="added" fill="#8884d8" name="Users Added" />
+          </BarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );

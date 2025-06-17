@@ -23,8 +23,6 @@ const data: AmbulanceGraphVal[] = [
 const MyGraph = () => {
   return (
     <div className="container-fluid">
-      <h3 className="text-center mt-3">Ambulances</h3>
-
       <div className="card shadow-lg p-4 mt-3">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <select className="form-select w-auto">

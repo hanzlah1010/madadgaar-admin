@@ -265,28 +265,39 @@ const LiveTracking = () => {
       console.log("Updated vehicle status:", driverId, isOnline);
     };
 
-    const socket = apiSocket.connect();
-    socket.on("error", (error: string) => {
+    const handleSocketError = (error: string) => {
       setApiError(`Socket error: ${error}`);
-    });
-    socket.on(
-      "driverLocationUpdate",
-      (updatedLocation: LocationUpdateSocketResponse) => {
-        updateVehicleLocation(updatedLocation.driverId, updatedLocation);
-      }
-    );
-    socket.on("connected", (payload) => {
+    };
+
+    const handleSocketConnect = (payload: { userId: number }) => {
       console.log("User connected:", payload);
-      const { userId } = payload as { userId: number };
+      const { userId } = payload;
       updateMatchingVehicle(userId, true);
-    });
-    socket.on("disconnected", (payload) => {
+    };
+
+    const handleSocketDisconnect = (payload: { userId: number }) => {
       console.log("User disconnected:", payload);
-      const { userId } = payload as { userId: number };
+      const { userId } = payload;
       updateMatchingVehicle(userId, false);
-    });
+    };
+
+    const handleSocketLocationUpdate = (
+      updatedLocation: LocationUpdateSocketResponse
+    ) => {
+      updateVehicleLocation(updatedLocation.driverId, updatedLocation);
+    };
+
+    const socket = apiSocket.connect();
+    socket.on("error", handleSocketError);
+    socket.on("driverLocationUpdate", handleSocketLocationUpdate);
+    socket.on("connected", handleSocketConnect);
+    socket.on("disconnected", handleSocketDisconnect);
 
     return () => {
+      socket.off("connected", handleSocketConnect);
+      socket.off("disconnected", handleSocketDisconnect);
+      socket.off("error", handleSocketError);
+      socket.off("driverLocationUpdate", handleSocketLocationUpdate);
       socket.disconnect();
     };
   }, [isLoading]);
@@ -321,6 +332,12 @@ const LiveTracking = () => {
           mapContainerStyle={mapContainerStyle}
           center={defaultCenter}
           zoom={15}
+          options={{
+            mapTypeControl: false,
+            mapTypeControlOptions: {
+              mapTypeIds: ["hybrid"],
+            },
+          }}
           onLoad={(map) => {
             mapRef.current = map;
           }}
