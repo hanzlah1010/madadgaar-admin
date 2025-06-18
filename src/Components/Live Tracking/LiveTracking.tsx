@@ -9,7 +9,7 @@ import apiController, { apiSocket } from "../../api/apiController";
 import { Ambulance } from "../../schemas/ambulance";
 import { LocationUpdateSocketResponse } from "../../schemas/sockets";
 
-const mapContainerStyle = { width: "100%", height: "500px" };
+const mapContainerStyle = { width: "100%", height: "100%" };
 const defaultCenter = { lat: 32.20464, lng: 74.177438 };
 
 // Helper function to get appropriate marker icon based on vehicle type and status

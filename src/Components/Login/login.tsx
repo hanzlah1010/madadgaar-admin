@@ -17,7 +17,7 @@ const Auth = () => {
 
   const Signin = async () => {
     if (!isValidEmail(email)) {
-      setError("Invalid email format! Please enter a valid email."); // ❌ Show error
+      setError("Invalid email format! Please enter a valid email."); 
       return;
     }
     setError("");
@@ -37,14 +37,7 @@ const Auth = () => {
     }
   };
 
-  const SigninWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, Provider);
-      navigate("/app");
-    } catch (error) {
-      setError((error as Error)?.message);
-    }
-  };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
@@ -69,12 +62,7 @@ const Auth = () => {
           Sign in
         </button>
         <br />
-        <button
-          onClick={SigninWithGoogle}
-          className="btn btn-success p-2 d-block mx-auto"
-        >
-          Sign in with Google
-        </button>
+        
       </div>
     </div>
   );

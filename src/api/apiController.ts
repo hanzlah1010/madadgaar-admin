@@ -30,7 +30,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config: AuthRequestConfig) => {
-    // Make the interceptor async
+    
     if (config.useAuth !== false) {
       return await authStrategy(config); // Await the async authStrategy
     }

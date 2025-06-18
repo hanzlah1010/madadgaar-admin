@@ -5,12 +5,11 @@ import LiveTracking from "./Components/Live Tracking/LiveTracking";
 import ManageRequests from "./Components/Manage Requests/managerequests";
 import Ambulances from "./Components/Ambulances/ambulance";
 import Auth from "./Components/Users/login";
-import Profile from "./Components/Profile/Profile";
 import Signup from "./Components/Users/Signup";
 import MedicalCrewPage from "./pages/Crew";
-
-const Reports = () => <h1 className="p-5">Reports</h1>;
-const Settings = () => <h1 className="p-5">Settings</h1>;
+import Reports from './Components/Reports/Reports';
+import MedicalCrew from "./Components/Crew/MedicalCrew";
+import AccidentDetections from "./Components/AI Detection/AIDetection";
 
 function App() {
   return (
@@ -24,16 +23,15 @@ function App() {
           <Route path="/app" element={<Dashboard />} />
           <Route path="/" element={<Dashboard />} />
 
-          <Route path="/profile" element={<Profile />} />
           <Route path="/ambulances" element={<Ambulances />} />
           <Route path="/signup" element={<Signup />} />
 
           <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/accidentdetection" element={<AccidentDetections />} />
           <Route path="/livetracking" element={<LiveTracking />} />
           <Route path="/managerequests" element={<ManageRequests />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/crew" element={<MedicalCrewPage />} />
+          <Route path="/crew" element={<MedicalCrew />} />
         </Routes>
       </div>
     </div>

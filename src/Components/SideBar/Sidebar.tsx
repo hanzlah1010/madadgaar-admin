@@ -172,6 +172,11 @@ const Sidebar = () => {
         </li>
         <li className="nav-item">
           <NavLink to="/" className="nav-link text-white">
+            <h3>MadadGaar</h3>
+          </NavLink>
+        </li>
+        <li className="nav-item">
+          <NavLink to="/" className="nav-link text-white">
             Dashboard
           </NavLink>
         </li>
@@ -183,6 +188,12 @@ const Sidebar = () => {
         <li className="nav-item">
           <NavLink to="/managerequests" className="nav-link text-white">
             Manage Requests{" "}
+            <span className="badge bg-danger">{pendingRequestsCount}</span>
+          </NavLink>
+        </li>
+        <li className="nav-item">
+          <NavLink to="/accidentdetection" className="nav-link text-white">
+            Accident Detection{" "}
             <span className="badge bg-danger">{pendingRequestsCount}</span>
           </NavLink>
         </li>

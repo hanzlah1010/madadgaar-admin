@@ -8,7 +8,7 @@ import { FirebaseError } from "firebase/app";
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // ❌ State for error message
+  const [error, setError] = useState(""); 
   const navigate = useNavigate();
 
   const isValidEmail = (email: string) => {
@@ -23,13 +23,13 @@ const Auth = () => {
     setError("");
 
     try {
-      await await signInWithEmailAndPassword(auth, email, password);
+       await signInWithEmailAndPassword(auth, email, password);
       navigate("/app");
     } catch (err) {
       const error = err as FirebaseError;
-      if (error.code === "auth/email-already-in-use") {
+      if (error.code === "email-already-in-use") {
         setError("Email Already Registered! Please use a different email.");
-      } else if (error.code === "auth/weak-password") {
+      } else if (error.code === "weak-password") {
         setError("Password should be at least 6 characters long.");
       } else {
         setError(error.message);
@@ -37,14 +37,7 @@ const Auth = () => {
     }
   };
 
-  const SigninWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, Provider);
-      navigate("/app");
-    } catch (error) {
-      setError((error as Error)?.message);
-    }
-  };
+  
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-dark">
@@ -65,19 +58,11 @@ const Auth = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <p className="text-danger">{error}</p>}
+        <br/>
         <button onClick={Signin} className="btn btn-primary  d-block mx-auto">
           Sign in
         </button>
-        <a className="nav-item" href="/signup">
-          Don't have an account? Sign-up now!
-        </a>
-        <br />
-        <button
-          onClick={SigninWithGoogle}
-          className="btn btn-success p-2 d-block mx-auto"
-        >
-          Sign in with Google
-        </button>
+        
       </div>
     </div>
   );
