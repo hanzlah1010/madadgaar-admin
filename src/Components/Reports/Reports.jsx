@@ -1,38 +1,60 @@
-import React, { useState } from "react";
-import { FaDownload, FaFilter } from "react-icons/fa";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from "react"
+import { FaDownload, FaFilter } from "react-icons/fa"
+import "bootstrap/dist/css/bootstrap.min.css"
 
 const Reports = () => {
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("all")
 
   const reportData = [
-    { date: "2025-06-18", name: "Ali", type: "Bike", region: "Lahore", status: "Completed", responseTime: "6 mins" },
-    { date: "2025-06-17", name: "Fatima", type: "Van", region: "Gujranwala", status: "Cancelled", responseTime: "-" },
-  ];
+    {
+      date: "2025-06-18",
+      name: "Ali",
+      type: "Bike",
+      region: "Lahore",
+      status: "Completed",
+      responseTime: "6 mins"
+    },
+    {
+      date: "2025-06-17",
+      name: "Fatima",
+      type: "Van",
+      region: "Gujranwala",
+      status: "Cancelled",
+      responseTime: "-"
+    }
+  ]
 
-  // Function to download CSV
   const handleDownload = () => {
-    const FilteredData =reportData.filter(row=> filter==="all"||row.type===filter);
-    const header =["Date", "Caller Name", "Type", "Region", "Status", "Response Time"];
-    const rows =FilteredData.map(row=>[
-        row.date,
-        row.name,
-        row.type,
-        row.region,
-        row.status,
-        row.responseTime
-    ]);
-    const csvcontent=[header,...rows].map(e=>e.join(",")).join("\n");
-    const blob = new Blob([csvcontent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement("a");
-    link.href = url;
-    link.setAttribute("download", "service_reports.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
+    const FilteredData = reportData.filter(
+      (row) => filter === "all" || row.type === filter
+    )
+    const header = [
+      "Date",
+      "Caller Name",
+      "Type",
+      "Region",
+      "Status",
+      "Response Time"
+    ]
+    const rows = FilteredData.map((row) => [
+      row.date,
+      row.name,
+      row.type,
+      row.region,
+      row.status,
+      row.responseTime
+    ])
+    const csvcontent = [header, ...rows].map((e) => e.join(",")).join("\n")
+    const blob = new Blob([csvcontent], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", "service_reports.csv")
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div className="container reports-container">
@@ -85,7 +107,7 @@ const Reports = () => {
         </table>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Reports;
+export default Reports

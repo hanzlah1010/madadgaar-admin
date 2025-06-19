@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react"
 import {
   GoogleMap,
   LoadScript,
   Marker,
-  InfoWindow,
-} from "@react-google-maps/api";
-import apiController, { apiSocket } from "../../api/apiController";
-import { Ambulance } from "../../schemas/ambulance";
-import { LocationUpdateSocketResponse } from "../../schemas/sockets";
+  InfoWindow
+} from "@react-google-maps/api"
+import apiController, { apiSocket } from "../../api/apiController"
+import { Ambulance } from "../../schemas/ambulance"
+import { LocationUpdateSocketResponse } from "../../schemas/sockets"
 
-const mapContainerStyle = { width: "100%", height: "100%" };
-const defaultCenter = { lat: 32.20464, lng: 74.177438 };
+const mapContainerStyle = { width: "100%", height: "100%" }
+const defaultCenter = { lat: 32.20464, lng: 74.177438 }
 
 // Helper function to get appropriate marker icon based on vehicle type and status
 const getVehicleIcon = (
@@ -19,62 +19,62 @@ const getVehicleIcon = (
   isOnline: boolean
 ): google.maps.Icon => {
   // Get color based on status
-  let colorName;
-  let colorShortName; // Short name for color
+  let colorName
+  let colorShortName // Short name for color
   if (isOnline) {
-    colorName = "pink";
-    colorShortName = "pink";
+    colorName = "pink"
+    colorShortName = "pink"
   } else {
     switch (status.toUpperCase()) {
       case "AVAILABLE":
-        colorName = "green"; // Available
-        colorShortName = "grn";
-        break;
+        colorName = "green" // Available
+        colorShortName = "grn"
+        break
       case "UNAVAILABLE_TEMPORARILY":
-        colorName = "yellow"; // Temporarily unavailable
-        colorShortName = "ylw";
-        break;
+        colorName = "yellow" // Temporarily unavailable
+        colorShortName = "ylw"
+        break
       case "DISPATCHED":
-        colorName = "blue"; // On service/dispatched
-        colorShortName = "blue";
-        break;
+        colorName = "blue" // On service/dispatched
+        colorShortName = "blue"
+        break
       case "UNDER_MAINTENANCE":
-        colorName = "orange"; // Under maintenance
-        colorShortName = "org";
-        break;
+        colorName = "orange" // Under maintenance
+        colorShortName = "org"
+        break
       case "OUT_OF_SERVICE":
-        colorName = "red"; // Out of service
-        colorShortName = "red";
-        break;
+        colorName = "red" // Out of service
+        colorShortName = "red"
+        break
       default:
-        colorName = "purple"; // Unknown status
-        colorShortName = "pur";
+        colorName = "purple" // Unknown status
+        colorShortName = "pur"
     }
   }
 
   // Get icon style based on vehicle type
-  let iconUrl;
+  let iconUrl
   switch (type.toUpperCase()) {
     case "FIRST_RESPONDER":
       // Bike/motorcycle
-      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`;
-      break;
+      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`
+      break
     case "FIRE_TRUCK":
       // Fire truck
-      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorShortName}-pushpin.png`;
-      break;
+      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorShortName}-pushpin.png`
+      break
     case "AMBULANCE":
       // Standard ambulance
-      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}.png`;
-      break;
+      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}.png`
+      break
     case "OTHER":
     default:
       // Default for other types
-      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`;
+      iconUrl = `https://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`
   }
 
-  return { url: iconUrl };
-};
+  return { url: iconUrl }
+}
 
 // Legend component to explain map markers
 const MapLegend = () => {
@@ -86,7 +86,7 @@ const MapLegend = () => {
         left: "20px",
         maxWidth: "250px",
         zIndex: 1000,
-        opacity: 0.9,
+        opacity: 0.9
       }}
     >
       <div className="card-header py-1 px-2 bg-light">
@@ -129,7 +129,7 @@ const MapLegend = () => {
                 width: "16px",
                 height: "16px",
                 backgroundColor: "#4CAF50",
-                borderRadius: "50%",
+                borderRadius: "50%"
               }}
             ></div>
             <small className="ms-2">Available</small>
@@ -140,7 +140,7 @@ const MapLegend = () => {
                 width: "16px",
                 height: "16px",
                 backgroundColor: "#FFC107",
-                borderRadius: "50%",
+                borderRadius: "50%"
               }}
             ></div>
             <small className="ms-2">Temporarily Unavailable</small>
@@ -151,7 +151,7 @@ const MapLegend = () => {
                 width: "16px",
                 height: "16px",
                 backgroundColor: "#2196F3",
-                borderRadius: "50%",
+                borderRadius: "50%"
               }}
             ></div>
             <small className="ms-2">Dispatched</small>
@@ -162,7 +162,7 @@ const MapLegend = () => {
                 width: "16px",
                 height: "16px",
                 backgroundColor: "#FF9800",
-                borderRadius: "50%",
+                borderRadius: "50%"
               }}
             ></div>
             <small className="ms-2">Under Maintenance</small>
@@ -173,7 +173,7 @@ const MapLegend = () => {
                 width: "16px",
                 height: "16px",
                 backgroundColor: "#F44336",
-                borderRadius: "50%",
+                borderRadius: "50%"
               }}
             ></div>
             <small className="ms-2">Out of Service</small>
@@ -181,54 +181,54 @@ const MapLegend = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const LiveTracking = () => {
-  const mapRef = useRef<google.maps.Map | null>(null);
+  const mapRef = useRef<google.maps.Map | null>(null)
 
-  const [ambulanceLocations, setAmbulanceLocations] = useState<Ambulance[]>([]);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [ambulanceLocations, setAmbulanceLocations] = useState<Ambulance[]>([])
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [selectedAmbulance, setSelectedAmbulance] = useState<Ambulance | null>(
     null
-  );
+  )
 
   // Fetch ambulance locations from backend
   const fetchAmbulanceLocations = async () => {
     try {
-      setIsLoading(true);
-      setApiError(null);
-      const response = await apiController.get("/admin/vehicles?limit=100");
-      const data = response.data;
-      const { vehicles } = data;
+      setIsLoading(true)
+      setApiError(null)
+      const response = await apiController.get("/admin/vehicles?limit=100")
+      const data = response.data
+      const { vehicles } = data
       if (Array.isArray(vehicles)) {
-        setAmbulanceLocations(vehicles);
+        setAmbulanceLocations(vehicles)
       } else if (data && typeof data === "object") {
-        const locationsArray = data.ambulances || data.locations || [];
+        const locationsArray = data.ambulances || data.locations || []
         setAmbulanceLocations(
           Array.isArray(locationsArray) ? locationsArray : []
-        );
+        )
       } else {
-        setAmbulanceLocations([]);
-        setApiError("Received unexpected data format from server");
+        setAmbulanceLocations([])
+        setApiError("Received unexpected data format from server")
       }
     } catch (error) {
-      setAmbulanceLocations([]);
+      setAmbulanceLocations([])
       setApiError(
         "Failed to fetch ambulance locations. Please try again later."
-      );
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   useEffect(() => {
-    fetchAmbulanceLocations();
-  }, []);
+    fetchAmbulanceLocations()
+  }, [])
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading) return
 
     const updateVehicleLocation = (
       driverId: number,
@@ -240,15 +240,15 @@ const LiveTracking = () => {
             return {
               ...vehicle,
               lat: newLocationData.lat,
-              lang: newLocationData.lang,
+              lang: newLocationData.lang
               // updatedAt: Date(newLocationData.timestamp),
-            };
+            }
           }
-          return vehicle;
+          return vehicle
         })
-      );
-      console.log("Updated vehicle GPS:", driverId);
-    };
+      )
+      console.log("Updated vehicle GPS:", driverId)
+    }
 
     const updateMatchingVehicle = (driverId: number, isOnline: boolean) => {
       setAmbulanceLocations((prev) =>
@@ -256,51 +256,51 @@ const LiveTracking = () => {
           if (vehicle?.driver?.id === driverId) {
             return {
               ...vehicle,
-              driver: { ...vehicle.driver, isOnline: isOnline },
-            };
+              driver: { ...vehicle.driver, isOnline: isOnline }
+            }
           }
-          return vehicle;
+          return vehicle
         })
-      );
-      console.log("Updated vehicle status:", driverId, isOnline);
-    };
+      )
+      console.log("Updated vehicle status:", driverId, isOnline)
+    }
 
-    const handleSocketError = (error: string) => {
-      setApiError(`Socket error: ${error}`);
-    };
+    const handleSocketError = (error: Error) => {
+      setApiError(`Socket error: ${error.message}`)
+    }
 
     const handleSocketConnect = (payload: { userId: number }) => {
-      console.log("User connected:", payload);
-      const { userId } = payload;
-      updateMatchingVehicle(userId, true);
-    };
+      console.log("User connected:", payload)
+      const { userId } = payload
+      updateMatchingVehicle(userId, true)
+    }
 
     const handleSocketDisconnect = (payload: { userId: number }) => {
-      console.log("User disconnected:", payload);
-      const { userId } = payload;
-      updateMatchingVehicle(userId, false);
-    };
+      console.log("User disconnected:", payload)
+      const { userId } = payload
+      updateMatchingVehicle(userId, false)
+    }
 
     const handleSocketLocationUpdate = (
       updatedLocation: LocationUpdateSocketResponse
     ) => {
-      updateVehicleLocation(updatedLocation.driverId, updatedLocation);
-    };
+      updateVehicleLocation(updatedLocation.driverId, updatedLocation)
+    }
 
-    const socket = apiSocket.connect();
-    socket.on("error", handleSocketError);
-    socket.on("driverLocationUpdate", handleSocketLocationUpdate);
-    socket.on("connected", handleSocketConnect);
-    socket.on("disconnected", handleSocketDisconnect);
+    const socket = apiSocket.connect()
+    socket.on("error", handleSocketError)
+    socket.on("driverLocationUpdate", handleSocketLocationUpdate)
+    socket.on("connected", handleSocketConnect)
+    socket.on("disconnected", handleSocketDisconnect)
 
     return () => {
-      socket.off("connected", handleSocketConnect);
-      socket.off("disconnected", handleSocketDisconnect);
-      socket.off("error", handleSocketError);
-      socket.off("driverLocationUpdate", handleSocketLocationUpdate);
-      socket.disconnect();
-    };
-  }, [isLoading]);
+      socket.off("connected", handleSocketConnect)
+      socket.off("disconnected", handleSocketDisconnect)
+      socket.off("error", handleSocketError)
+      socket.off("driverLocationUpdate", handleSocketLocationUpdate)
+      socket.disconnect()
+    }
+  }, [isLoading])
 
   return (
     <div>
@@ -335,11 +335,11 @@ const LiveTracking = () => {
           options={{
             mapTypeControl: false,
             mapTypeControlOptions: {
-              mapTypeIds: ["hybrid"],
-            },
+              mapTypeIds: ["hybrid"]
+            }
           }}
           onLoad={(map) => {
-            mapRef.current = map;
+            mapRef.current = map
           }}
         >
           {Array.isArray(ambulanceLocations) &&
@@ -361,7 +361,7 @@ const LiveTracking = () => {
             <InfoWindow
               position={{
                 lat: selectedAmbulance.lat,
-                lng: selectedAmbulance.lang,
+                lng: selectedAmbulance.lang
               }}
               onCloseClick={() => setSelectedAmbulance(null)}
             >
@@ -469,7 +469,7 @@ const LiveTracking = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default LiveTracking;
+export default LiveTracking

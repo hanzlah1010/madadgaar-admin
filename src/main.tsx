@@ -1,15 +1,14 @@
-import { Routes, Route } from "react-router-dom";
-import Sidebar from "./Components/SideBar/Sidebar";
-import Dashboard from "./Components/Dashboard/dashboard";
-import LiveTracking from "./Components/Live Tracking/LiveTracking";
-import ManageRequests from "./Components/Manage Requests/managerequests";
-import Ambulances from "./Components/Ambulances/ambulance";
-import Auth from "./Components/Users/login";
-import Signup from "./Components/Users/Signup";
-import MedicalCrewPage from "./pages/Crew";
-import Reports from './Components/Reports/Reports';
-import MedicalCrew from "./Components/Crew/MedicalCrew";
-import AccidentDetections from "./Components/AI Detection/AIDetection";
+import { Routes, Route } from "react-router-dom"
+import Sidebar from "./Components/SideBar/Sidebar"
+import Dashboard from "./Components/Dashboard/dashboard"
+import LiveTracking from "./Components/Live Tracking/LiveTracking"
+import ManageRequests from "./Components/Manage Requests/managerequests"
+import Ambulances from "./Components/Ambulances/ambulance"
+import Auth from "./Components/Users/login"
+import Signup from "./Components/Users/Signup"
+import Reports from "./Components/Reports/Reports"
+import MedicalCrew from "./Components/Crew/MedicalCrew"
+import AccidentDetections from "./Components/AI Detection/AIDetection"
 
 function App() {
   return (
@@ -35,7 +34,7 @@ function App() {
         </Routes>
       </div>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

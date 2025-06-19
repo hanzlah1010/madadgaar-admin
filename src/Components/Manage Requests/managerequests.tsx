@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { HelpRequest } from "../../schemas/requests";
-import ReviewRequestMap from "./ReviewRequestMap";
-import { apiSocket, apiSocketAuthUserId } from "../../api/apiController";
+import React, { useState, useEffect } from "react"
+import { HelpRequest } from "../../schemas/requests"
+import ReviewRequestMap from "./ReviewRequestMap"
+import { apiSocket, apiSocketAuthUserId } from "../../api/apiController"
 const requests: HelpRequest[] = [
   {
     id: 1,
@@ -13,14 +13,14 @@ const requests: HelpRequest[] = [
     driverContact: "0300-4424987",
     distance: "400m",
     lat: 32.1877,
-    lng: 74.1945, // Fazal Town, Gujranwala
+    lng: 74.1945 // Fazal Town, Gujranwala
   },
   {
     id: 2,
     patient: "Sara Ahmed",
     location: "Karachi",
     status: "Completed",
-    type: "Van",
+    type: "Van"
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ const requests: HelpRequest[] = [
     driverContact: "0321-5566778",
     distance: "2.5km",
     lat: 32.1682,
-    lng: 74.2137, // Garden Town, Gujranwala
+    lng: 74.2137 // Garden Town, Gujranwala
   },
   {
     id: 4,
@@ -44,7 +44,7 @@ const requests: HelpRequest[] = [
     driverContact: "0333-9988776",
     distance: "3km",
     lat: 32.1565,
-    lng: 74.1871, // SITE Area, Gujranwala
+    lng: 74.1871 // SITE Area, Gujranwala
   },
   {
     id: 5,
@@ -56,14 +56,14 @@ const requests: HelpRequest[] = [
     driverContact: "0301-1122334",
     distance: "5km",
     lat: 32.21,
-    lng: 74.18, // City Housing, Gujranwala
+    lng: 74.18 // City Housing, Gujranwala
   },
   {
     id: 6,
     patient: "Zainab Gul",
     location: "Rawalpindi",
     status: "Completed",
-    type: "Van",
+    type: "Van"
   },
   {
     id: 7,
@@ -72,7 +72,7 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Bike",
     driver: "Noman Akhtar",
-    driverContact: "0345-2233445",
+    driverContact: "0345-2233445"
   },
   {
     id: 8,
@@ -81,14 +81,14 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Van",
     driver: "Sajid Khan",
-    driverContact: "0312-3344556",
+    driverContact: "0312-3344556"
   },
   {
     id: 9,
     patient: "Ayesha Noor",
     location: "Quetta",
     status: "Completed",
-    type: "Fire Brigade",
+    type: "Fire Brigade"
   },
   {
     id: 10,
@@ -97,7 +97,7 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Bike",
     driver: "Rashid Latif",
-    driverContact: "0302-4455667",
+    driverContact: "0302-4455667"
   },
   {
     id: 11,
@@ -106,14 +106,14 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Van",
     driver: "Zeeshan Ali",
-    driverContact: "0331-7788990",
+    driverContact: "0331-7788990"
   },
   {
     id: 12,
     patient: "Nadia Khan",
     location: "Sialkot",
     status: "Completed",
-    type: "Bike",
+    type: "Bike"
   },
   {
     id: 13,
@@ -122,7 +122,7 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Van",
     driver: "Adnan Bashir",
-    driverContact: "0346-8899001",
+    driverContact: "0346-8899001"
   },
   {
     id: 14,
@@ -131,7 +131,7 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Fire Brigade",
     driver: "Shahid Nawaz",
-    driverContact: "0304-5566778",
+    driverContact: "0304-5566778"
   },
   {
     id: 15,
@@ -140,14 +140,14 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Bike",
     driver: "Waseem Raza",
-    driverContact: "0322-6677889",
+    driverContact: "0322-6677889"
   },
   {
     id: 16,
     patient: "Shahzad Alam",
     location: "Sukkur",
     status: "Completed",
-    type: "Van",
+    type: "Van"
   },
   {
     id: 17,
@@ -156,7 +156,7 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Fire Brigade",
     driver: "Kamran Yousaf",
-    driverContact: "0313-2233445",
+    driverContact: "0313-2233445"
   },
   {
     id: 18,
@@ -165,14 +165,14 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Van",
     driver: "Furqan Saleem",
-    driverContact: "0347-1122334",
+    driverContact: "0347-1122334"
   },
   {
     id: 19,
     patient: "Rabia Malik",
     location: "Larkana",
     status: "Completed",
-    type: "Bike",
+    type: "Bike"
   },
   {
     id: 20,
@@ -181,40 +181,41 @@ const requests: HelpRequest[] = [
     status: "Completed",
     type: "Bike",
     driver: "Adeel Shabbir",
-    driverContact: "0305-3344556",
-  },
-];
+    driverContact: "0305-3344556"
+  }
+]
 
 export default function ManageRequests() {
-  const [requestList, setRequestList] = useState(requests);
-  const [showReview, setShowReview] = useState(false);
+  const [requestList, setRequestList] = useState(requests)
+  const [showReview, setShowReview] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState<HelpRequest | null>(
     null
-  );
-  const [count, setCount] = useState(0);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [reviewTimers, setReviewTimers] = useState<{ [id: string]: number }>(
-    {}
-  );
+  )
+  const [count, setCount] = useState(0)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [reviewTimers, setReviewTimers] = useState<{ [id: string]: number }>({})
   const [reviewDisabled, setReviewDisabled] = useState<{
-    [id: string]: boolean;
-  }>({});
+    [id: string]: boolean
+  }>({})
 
   useEffect(() => {
     const handleNewRequest = (newRequest: {
       emergency: {
-        id: string;
-        locationName: string;
-        reporter: { firstName: string };
-        ambulance: { type: string; driver: { name: string; phone: string; id: number; } };
-        distance: number;
-        reportLatitude: number;
-        reportLongitude: number;
-        requestReceivedAt: string;
-        requestApprovalCounterExpiresAt: string;
-      };
+        id: string
+        locationName: string
+        reporter: { firstName: string }
+        ambulance: {
+          type: string
+          driver: { name: string; phone: string; id: number }
+        }
+        distance: number
+        reportLatitude: number
+        reportLongitude: number
+        requestReceivedAt: string
+        requestApprovalCounterExpiresAt: string
+      }
     }) => {
-      console.log("New request received:", newRequest);
+      console.log("New request received:", newRequest)
       setRequestList((prevRequests) => [
         ...prevRequests,
         {
@@ -232,55 +233,55 @@ export default function ManageRequests() {
           approvalCounterExpiresAt: new Date(
             newRequest?.emergency?.requestApprovalCounterExpiresAt
           ),
-          status: "Pending",
-        },
-      ]);
-      setCount((prevCount) => prevCount + 1);
-    };
+          status: "Pending"
+        }
+      ])
+      setCount((prevCount) => prevCount + 1)
+    }
 
     const handleRequestPickedUp = (requestId: string) => {
-      console.log("Request picked up:", requestId);
-      console.log("Pending requests before update:", requestList);
+      console.log("Request picked up:", requestId)
+      console.log("Pending requests before update:", requestList)
       setRequestList((prevRequests) =>
         prevRequests.map((req) =>
           req.id === requestId
             ? {
                 ...req,
-                status: "Under Review",
+                status: "Under Review"
               }
             : req
         )
-      );
+      )
       setReviewTimers((prevTimers) => {
-        const updatedTimers = { ...prevTimers };
-        updatedTimers[requestId] = 0; // Expire the timer
-        return updatedTimers;
-      });
+        const updatedTimers = { ...prevTimers }
+        updatedTimers[requestId] = 0 // Expire the timer
+        return updatedTimers
+      })
       setReviewDisabled((prevDisabled) => {
-        const updatedDisabled = { ...prevDisabled };
-        updatedDisabled[requestId] = true; // Disble the review button
-        return updatedDisabled;
-      });
-    };
+        const updatedDisabled = { ...prevDisabled }
+        updatedDisabled[requestId] = true // Disble the review button
+        return updatedDisabled
+      })
+    }
 
-    const socket = apiSocket.connect();
-    socket.on("emergencyReported", handleNewRequest);
-    socket.on("requestPickedUp", handleRequestPickedUp);
+    const socket = apiSocket.connect()
+    socket.on("emergencyReported", handleNewRequest)
+    socket.on("requestPickedUp", handleRequestPickedUp)
 
     return () => {
-      socket.off("emergencyReported", handleNewRequest);
-      socket.off("requestPickedUp", handleRequestPickedUp);
-      socket.disconnect?.(); // Only if your socket supports disconnect
-    };
-  }, []);
+      socket.off("emergencyReported", handleNewRequest)
+      socket.off("requestPickedUp", handleRequestPickedUp)
+      socket.disconnect?.() // Only if your socket supports disconnect
+    }
+  }, [])
 
   useEffect(() => {
-    setCount(requestList.filter((req) => req.status === "Pending").length);
-  }, [requestList]);
+    setCount(requestList.filter((req) => req.status === "Pending").length)
+  }, [requestList])
 
   useEffect(() => {
-    const timers: { [id: string]: number } = {};
-    const disabled: { [id: string]: boolean } = {};
+    const timers: { [id: string]: number } = {}
+    const disabled: { [id: string]: boolean } = {}
 
     requestList.forEach((req) => {
       if (req.status === "Pending") {
@@ -288,74 +289,74 @@ export default function ManageRequests() {
           req.approvalCounterExpiresAt instanceof Date &&
           !isNaN(req.approvalCounterExpiresAt.getTime())
         ) {
-          const now = new Date();
+          const now = new Date()
           const diff = Math.max(
             0,
             Math.floor(
               (req.approvalCounterExpiresAt.getTime() - now.getTime()) / 1000
             )
-          );
-          timers[req.id] = diff;
-          disabled[req.id] = diff <= 0;
+          )
+          timers[req.id] = diff
+          disabled[req.id] = diff <= 0
         } else {
-          timers[req.id] = 0;
-          disabled[req.id] = true;
+          timers[req.id] = 0
+          disabled[req.id] = true
         }
       }
-    });
+    })
 
-    setReviewTimers(timers);
-    setReviewDisabled(disabled);
-  }, [requestList]);
+    setReviewTimers(timers)
+    setReviewDisabled(disabled)
+  }, [requestList])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setReviewTimers((prev) => {
-        const updated: { [id: string]: number } = {};
+        const updated: { [id: string]: number } = {}
         Object.entries(prev).forEach(([id, time]) => {
-          updated[id] = Math.max(0, time - 1);
-        });
-        return updated;
-      });
+          updated[id] = Math.max(0, time - 1)
+        })
+        return updated
+      })
       setReviewDisabled((prev) => {
-        const updated: { [id: string]: boolean } = {};
+        const updated: { [id: string]: boolean } = {}
         Object.entries(reviewTimers).forEach(([id, time]) => {
-          updated[id] = time <= 1;
-        });
-        return updated;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [reviewTimers]);
+          updated[id] = time <= 1
+        })
+        return updated
+      })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [reviewTimers])
 
   const handleAccept = (id: number) => {
     setRequestList((prevRequests) =>
       prevRequests.map((req) =>
         req.id === id ? { ...req, status: "Completed" } : req
       )
-    );
-  };
+    )
+  }
 
   const handleReview = (req: HelpRequest) => {
-    setSelectedRequest(req);
-    setShowReview(true);
+    setSelectedRequest(req)
+    setShowReview(true)
 
     // Emit socket event for review using existing connection
-    const socket = apiSocket.connect();
+    const socket = apiSocket.connect()
     socket.emit("requestUnderReview", {
       requestId: req.id,
-      reviewedAt: new Date().toISOString(),
-    });
+      reviewedAt: new Date().toISOString()
+    })
 
-    console.log("Review event emitted for request:", req.id);
-  };
+    console.log("Review event emitted for request:", req.id)
+  }
 
   const filteredRequests = requestList.filter(
     (req) =>
       req.patient?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       req.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       req.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  )
 
   return (
     <div className="p-4">
@@ -441,14 +442,14 @@ export default function ManageRequests() {
                                   : "btn-primary"
                               }`}
                               onClick={() => {
-                                handleReview(req);
+                                handleReview(req)
                                 setRequestList((prev) =>
                                   prev.map((r) =>
                                     r.id === req.id
                                       ? { ...r, status: "Completed" }
                                       : r
                                   )
-                                );
+                                )
                               }}
                               disabled={reviewDisabled[req.id]}
                               style={{
@@ -458,7 +459,7 @@ export default function ManageRequests() {
                                 cursor: reviewDisabled[req.id]
                                   ? "not-allowed"
                                   : "pointer",
-                                opacity: reviewDisabled[req.id] ? 0.7 : 1,
+                                opacity: reviewDisabled[req.id] ? 0.7 : 1
                               }}
                             >
                               📝 Review
@@ -492,7 +493,7 @@ export default function ManageRequests() {
                                     : "#0d6efd",
                                   transition: "width 1s linear",
                                   borderRadius: "0 0 4px 4px",
-                                  zIndex: 2,
+                                  zIndex: 2
                                 }}
                               />
                             )}
@@ -559,7 +560,7 @@ export default function ManageRequests() {
           className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
           style={{
             background: "rgba(0,0,0,0.5)",
-            zIndex: 2000,
+            zIndex: 2000
           }}
         >
           <div
@@ -583,5 +584,5 @@ export default function ManageRequests() {
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -1,53 +1,51 @@
-import { use, useEffect, useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import { Ambulance } from "../../schemas/ambulance";
-import apiController, { apiSocket } from "../../api/apiController";
+import "bootstrap/dist/css/bootstrap.min.css" // Import Bootstrap CSS
+import { useEffect, useState } from "react"
+import { Ambulance } from "../../schemas/ambulance"
+import apiController, { apiSocket } from "../../api/apiController"
 
 const AmbulancesScreen = () => {
   // State for ambulance data
-  const [ambulances, setAmbulances] = useState<Ambulance[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(true); // Keep for list operations
-  const [error, setError] = useState<string | null>(null); // Keep for list operations
+  const [ambulances, setAmbulances] = useState<Ambulance[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [isLoading, setIsLoading] = useState(true) // Keep for list operations
+  const [error, setError] = useState<string | null>(null) // Keep for list operations
 
   // New states for add operation
-  const [isAddLoading, setIsAddLoading] = useState(false);
-  const [addError, setAddError] = useState<string | null>(null);
+  const [isAddLoading, setIsAddLoading] = useState(false)
+  const [addError, setAddError] = useState<string | null>(null)
 
   // New states for edit operation
-  const [isEditLoading, setIsEditLoading] = useState(false);
-  const [editError, setEditError] = useState<string | null>(null);
+  const [isEditLoading, setIsEditLoading] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
 
   // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
-  const [totalVehicles, setTotalVehicles] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(12)
+  const [totalVehicles, setTotalVehicles] = useState(0)
 
   // City filter states
-  const [selectedCity, setSelectedCity] = useState("");
-  const [availableCities, setAvailableCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState("")
+  const [availableCities, setAvailableCities] = useState<string[]>([])
 
   // Status filter states
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("")
   const statusOptions = [
     { value: "AVAILABLE", label: "Available" },
     { value: "UNAVAILABLE_TEMPORARILY", label: "Temporarily Unavailable" },
     { value: "DISPATCHED", label: "Dispatched" },
     { value: "UNDER_MAINTENANCE", label: "Under Maintenance" },
-    { value: "OUT_OF_SERVICE", label: "Out of Service" },
-  ];
+    { value: "OUT_OF_SERVICE", label: "Out of Service" }
+  ]
 
   // New state variables for vehicle details modal
-  const [selectedVehicle, setSelectedVehicle] = useState<Ambulance | null>(
-    null
-  );
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<Ambulance | null>(null)
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
 
   // Add near the top with other state definitions
-  const [userRole, setUserRole] = useState("admin"); // Default to admin for testing
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [userRole, setUserRole] = useState("admin") // Default to admin for testing
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [formData, setFormData] = useState<Partial<Ambulance>>({
     plateNumber: "",
     model: "",
@@ -55,50 +53,50 @@ const AmbulancesScreen = () => {
     capacity: 4,
     type: "AMBULANCE",
     status: "AVAILABLE",
-    assignedToId: 0,
-  });
+    assignedToId: 0
+  })
 
   // Add near the top with other state definitions
-  const [stationSearchTerm, setStationSearchTerm] = useState("");
+  const [stationSearchTerm, setStationSearchTerm] = useState("")
   const [stationSearchResults, setStationSearchResults] = useState<
     { id: number; name: string; city: string }[]
-  >([]);
-  const [isSearchingStations, setIsSearchingStations] = useState(false);
-  const [showStationDropdown, setShowStationDropdown] = useState(false);
+  >([])
+  const [isSearchingStations, setIsSearchingStations] = useState(false)
+  const [showStationDropdown, setShowStationDropdown] = useState(false)
 
   // Add this function near your other utility functions
   const getVehicleTypeIcon = (type: string): string => {
     // Icon mapping based on vehicle type
     switch (type) {
       case "AMBULANCE":
-        return "heart-pulse"; // Ambulance icon (Mercedes Sprinter)
+        return "heart-pulse" // Ambulance icon (Mercedes Sprinter)
       case "FIRST_RESPONDER":
-        return "bicycle"; // Bike icon for first responders
+        return "bicycle" // Bike icon for first responders
       case "FIRE_TRUCK":
-        return "fire"; // Fire icon for fire trucks
+        return "fire" // Fire icon for fire trucks
       case "OTHER":
-        return "car-front"; // Generic vehicle icon
+        return "car-front" // Generic vehicle icon
       default:
-        return "ambulance"; // Default fallback
+        return "ambulance" // Default fallback
     }
-  };
+  }
 
   // Add this function to get both icon and color
   const getVehicleTypeDisplay = (type: string) => {
     // Type to icon and color mapping
     switch (type) {
       case "AMBULANCE":
-        return { icon: "heart-pulse", color: "primary" }; // Blue for ambulances
+        return { icon: "heart-pulse", color: "primary" } // Blue for ambulances
       case "FIRST_RESPONDER":
-        return { icon: "bicycle", color: "success" }; // Green for first responders
+        return { icon: "bicycle", color: "success" } // Green for first responders
       case "FIRE_TRUCK":
-        return { icon: "fire", color: "danger" }; // Red for fire trucks
+        return { icon: "fire", color: "danger" } // Red for fire trucks
       case "OTHER":
-        return { icon: "car-front", color: "secondary" }; // Gray for other vehicles
+        return { icon: "car-front", color: "secondary" } // Gray for other vehicles
       default:
-        return { icon: "ambulance", color: "info" }; // Light blue as default
+        return { icon: "ambulance", color: "info" } // Light blue as default
     }
-  };
+  }
 
   // Add after other modal handling functions
 
@@ -112,17 +110,17 @@ const AmbulancesScreen = () => {
       capacity: 4,
       type: "AMBULANCE",
       status: "AVAILABLE",
-      assignedToId: 0,
-    });
-    setStationSearchTerm("");
-    setShowAddModal(true);
-  };
+      assignedToId: 0
+    })
+    setStationSearchTerm("")
+    setShowAddModal(true)
+  }
 
   // Function to handle closing the add vehicle modal
   const closeAddVehicleModal = () => {
-    setShowAddModal(false);
-    setAddError(null); // Clear add error when closing modal
-  };
+    setShowAddModal(false)
+    setAddError(null) // Clear add error when closing modal
+  }
 
   // Function to handle opening the edit vehicle modal
   const openEditVehicleModal = (vehicle: Ambulance) => {
@@ -136,43 +134,43 @@ const AmbulancesScreen = () => {
       status: vehicle.status,
       assignedToId: vehicle.assignedToId,
       unavailableUntil: vehicle.unavailableUntil,
-      lastMaintenanceAt: vehicle.lastMaintenanceAt,
-    });
+      lastMaintenanceAt: vehicle.lastMaintenanceAt
+    })
     // Set the station search term to display the currently assigned station
     setStationSearchTerm(
       vehicle.assignedTo
         ? `${vehicle.assignedTo.name}, ${vehicle.assignedTo.city}`
         : ""
-    );
-    setShowEditModal(true);
-  };
+    )
+    setShowEditModal(true)
+  }
 
   // Function to handle closing the edit vehicle modal
   const closeEditVehicleModal = () => {
-    setShowEditModal(false);
-    setEditError(null); // Clear edit error when closing modal
-  };
+    setShowEditModal(false)
+    setEditError(null) // Clear edit error when closing modal
+  }
 
   // Function to handle form input changes
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     setFormData((prev) => ({
       ...prev,
       [name]:
         name === "modelYear" || name === "capacity" || name === "assignedToId"
           ? parseInt(value, 10)
-          : value,
-    }));
-  };
+          : value
+    }))
+  }
 
   // Function to handle form submission for adding vehicle
   const handleAddVehicle = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      setAddError(null); // Reset add error state
-      setIsAddLoading(true); // Use add-specific loading state
+      setAddError(null) // Reset add error state
+      setIsAddLoading(true) // Use add-specific loading state
 
       // Transform formData to match AddVehicleDTO
       const addVehicleData = {
@@ -184,37 +182,37 @@ const AmbulancesScreen = () => {
         status: formData.status,
         stationId: formData.assignedToId, // DTO expects stationId, not assignedToId
         unavailableUntil: formData.unavailableUntil,
-        lastMaintenanceAt: formData.lastMaintenanceAt,
-      };
+        lastMaintenanceAt: formData.lastMaintenanceAt
+      }
 
       const response = await apiController.post("/admin/vehicles", {
         ...addVehicleData,
         lat: 60,
-        lang: 70,
-      });
+        lang: 70
+      })
       if (response.status === 201) {
-        closeAddVehicleModal();
+        closeAddVehicleModal()
         // Refresh the list
-        fetchAmbulances();
+        fetchAmbulances()
       }
     } catch (err: any) {
-      console.error("Failed to add vehicle:", err);
+      console.error("Failed to add vehicle:", err)
       // Use the specific error state
       setAddError(
         err.response?.data?.message ||
           "Failed to add vehicle. Please try again."
-      );
+      )
     } finally {
-      setIsAddLoading(false); // Use add-specific loading state
+      setIsAddLoading(false) // Use add-specific loading state
     }
-  };
+  }
 
   // Function to handle form submission for editing vehicle
   const handleEditVehicle = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      setEditError(null); // Reset edit error state
-      setIsEditLoading(true); // Use edit-specific loading state
+      setEditError(null) // Reset edit error state
+      setIsEditLoading(true) // Use edit-specific loading state
 
       // Create vehicle update data that matches UpdateVehicleRequestDTO
       const updateVehicleData = {
@@ -228,35 +226,35 @@ const AmbulancesScreen = () => {
           status: formData.status,
           stationId: formData.assignedToId, // DTO expects stationId, not assignedToId
           unavailableUntil: formData.unavailableUntil,
-          lastMaintenanceAt: formData.lastMaintenanceAt,
-        },
-      };
+          lastMaintenanceAt: formData.lastMaintenanceAt
+        }
+      }
 
       const response = await apiController.put(
         `/admin/vehicles/${formData.id}`,
         updateVehicleData
-      );
+      )
 
       if (response.status === 200) {
-        closeEditVehicleModal();
+        closeEditVehicleModal()
         // Refresh the list
-        fetchAmbulances();
+        fetchAmbulances()
         // If the vehicle details modal was open, refresh that data
         if (selectedVehicle && selectedVehicle.id === formData.id) {
-          setSelectedVehicle(response.data);
+          setSelectedVehicle(response.data)
         }
       }
     } catch (err: any) {
-      console.error("Failed to update vehicle:", err);
+      console.error("Failed to update vehicle:", err)
       // Use the specific error state
       setEditError(
         err.response?.data?.message ||
           "Failed to update vehicle. Please try again."
-      );
+      )
     } finally {
-      setIsEditLoading(false); // Use edit-specific loading state
+      setIsEditLoading(false) // Use edit-specific loading state
     }
-  };
+  }
 
   // Function to fetch ambulances with pagination and filters
   const fetchAmbulances = async (
@@ -267,125 +265,125 @@ const AmbulancesScreen = () => {
     status = selectedStatus
   ) => {
     try {
-      setIsLoading(true);
-      setError(null);
+      setIsLoading(true)
+      setError(null)
 
       // Build query parameters
-      const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("limit", limit.toString());
+      const params = new URLSearchParams()
+      params.append("page", page.toString())
+      params.append("limit", limit.toString())
 
       if (query) {
-        params.append("query", query);
+        params.append("query", query)
       }
 
       if (city) {
-        params.append("city", city);
+        params.append("city", city)
       }
 
       if (status) {
-        params.append("status", status);
+        params.append("status", status)
       }
 
       // Make API request with query params
       const response = await apiController.get(
         `/admin/vehicles?${params.toString()}`
-      );
+      )
 
       if (response.status !== 200) {
-        throw new Error(`Error: ${response.status}`);
+        throw new Error(`Error: ${response.status}`)
       }
 
-      const data = response.data;
+      const data = response.data
 
       // Update states with response data
-      setAmbulances(data.vehicles || []);
-      setTotalVehicles(data.totalVehicles || 0);
-      setCurrentPage(data.currentPage || 1);
-      setTotalPages(data.totalPages || 1);
-      setAvailableCities(data.stationCities || []);
+      setAmbulances(data.vehicles || [])
+      setTotalVehicles(data.totalVehicles || 0)
+      setCurrentPage(data.currentPage || 1)
+      setTotalPages(data.totalPages || 1)
+      setAvailableCities(data.stationCities || [])
     } catch (err) {
-      console.error("Failed to fetch ambulances:", err);
-      setError("Failed to load emergency vehicles. Please try again later.");
+      console.error("Failed to fetch ambulances:", err)
+      setError("Failed to load emergency vehicles. Please try again later.")
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Function to search stations based on query
   const searchStations = async (query: string) => {
     try {
-      setIsSearchingStations(true);
-      const params = new URLSearchParams();
-      params.append("limit", "10");
+      setIsSearchingStations(true)
+      const params = new URLSearchParams()
+      params.append("limit", "10")
 
       if (query) {
-        params.append("query", query);
+        params.append("query", query)
       }
 
       const response = await apiController.get(
         `/admin/stations?${params.toString()}`
-      );
+      )
       if (response.status === 200) {
-        setStationSearchResults(response.data.stations || []);
+        setStationSearchResults(response.data.stations || [])
       }
     } catch (err) {
-      console.error("Error searching stations:", err);
-      setStationSearchResults([]);
+      console.error("Error searching stations:", err)
+      setStationSearchResults([])
     } finally {
-      setIsSearchingStations(false);
+      setIsSearchingStations(false)
     }
-  };
+  }
 
   // Add this effect for debounced station search
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (stationSearchTerm.trim()) {
-        searchStations(stationSearchTerm);
+        searchStations(stationSearchTerm)
       } else {
-        setStationSearchResults([]);
+        setStationSearchResults([])
       }
-    }, 300);
+    }, 300)
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [stationSearchTerm]);
+    return () => clearTimeout(delayDebounceFn)
+  }, [stationSearchTerm])
 
   // Function to handle station selection
   const handleStationSelect = (station: {
-    id: number;
-    name: string;
-    city: string;
+    id: number
+    name: string
+    city: string
   }) => {
     setFormData((prev) => ({
       ...prev,
-      assignedToId: station.id,
-    }));
-    setStationSearchTerm(`${station.name}, ${station.city}`);
-    setShowStationDropdown(false);
-  };
+      assignedToId: station.id
+    }))
+    setStationSearchTerm(`${station.name}, ${station.city}`)
+    setShowStationDropdown(false)
+  }
 
   // Function to handle clicks outside the station dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+      const target = event.target as HTMLElement
       if (!target.closest("#stationSearchContainer")) {
-        setShowStationDropdown(false);
+        setShowStationDropdown(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   // Initial data load
   useEffect(() => {
-    fetchAmbulances();
-  }, []);
+    fetchAmbulances()
+  }, [])
 
   useEffect(() => {
-    if (isLoading) return; // Don't run if still loading
+    if (isLoading) return // Don't run if still loading
     const updateMatchingVehicle = (driverId: number, isOnline: boolean) => {
       // Don't update if still loading
 
@@ -397,105 +395,100 @@ const AmbulancesScreen = () => {
               ...vehicle,
               driver: {
                 ...vehicle.driver,
-                isOnline: isOnline,
-              },
-            };
+                isOnline: isOnline
+              }
+            }
           }
-          return vehicle;
+          return vehicle
         })
-      );
-    };
+      )
+    }
 
-    const socket = apiSocket.connect();
+    const socket = apiSocket.connect()
     socket.on("error", (err) => {
-      console.error("Socket connection error:", err);
-    });
+      console.error("Socket connection error:", err)
+    })
     socket.on("connected", (payload) => {
-      const { userId } = payload as { userId: number };
-      updateMatchingVehicle(userId, true);
-    });
+      const { userId } = payload as { userId: number }
+      updateMatchingVehicle(userId, true)
+    })
     socket.on("disconnected", (payload) => {
-      const { userId } = payload as { userId: number };
-      updateMatchingVehicle(userId, false);
-    });
+      const { userId } = payload as { userId: number }
+      updateMatchingVehicle(userId, false)
+    })
 
     return () => {
-      socket.disconnect();
-    };
-  }, [isLoading]);
+      socket.disconnect()
+    }
+  }, [isLoading])
 
   // Debounce search input to avoid excessive API calls
   useEffect(() => {
+    if (!searchTerm) return
     const delayDebounceFn = setTimeout(() => {
-      fetchAmbulances(
-        1,
-        itemsPerPage,
-        searchTerm,
-        selectedCity,
-        selectedStatus
-      );
-    }, 500);
+      fetchAmbulances(1, itemsPerPage, searchTerm, selectedCity, selectedStatus)
+    }, 500)
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm])
 
   // Handle city filter change
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const city = e.target.value;
-    setSelectedCity(city);
-    fetchAmbulances(1, itemsPerPage, searchTerm, city, selectedStatus);
-  };
+    const city = e.target.value
+    setSelectedCity(city)
+    fetchAmbulances(1, itemsPerPage, searchTerm, city, selectedStatus)
+  }
 
   // Handle status filter change
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const status = e.target.value;
-    setSelectedStatus(status);
-    fetchAmbulances(1, itemsPerPage, searchTerm, selectedCity, status);
-  };
+    const status = e.target.value
+    setSelectedStatus(status)
+    fetchAmbulances(1, itemsPerPage, searchTerm, selectedCity, status)
+  }
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchTerm("");
-    setSelectedCity("");
-    setSelectedStatus("");
-    fetchAmbulances(1, itemsPerPage, "", "", "");
-  };
+    setSearchTerm("")
+    setSelectedCity("")
+    setSelectedStatus("")
+    fetchAmbulances(1, itemsPerPage, "", "", "")
+  }
 
   // Handle page change
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    setCurrentPage(page)
     fetchAmbulances(
       page,
       itemsPerPage,
       searchTerm,
       selectedCity,
       selectedStatus
-    );
-  };
+    )
+  }
 
   // Handle items per page change
   const handleItemsPerPageChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    const newLimit = Number(e.target.value);
-    setItemsPerPage(newLimit);
+    const newLimit = Number(e.target.value)
+    setItemsPerPage(newLimit)
     // Reset to first page when changing items per page
-    fetchAmbulances(1, newLimit, searchTerm, selectedCity, selectedStatus);
-  };
+    fetchAmbulances(1, newLimit, searchTerm, selectedCity, selectedStatus)
+  }
 
   const toSentenceCase = (str: string) => {
-    if (!str) return "";
-    const chunks = str.split("_").map((chunk) => chunk.trim());
+    if (!str) return ""
+    const chunks = str.split("_").map((chunk) => chunk.trim())
     const capitalizedChunks = chunks.map((chunk) => {
-      return chunk.charAt(0).toUpperCase() + chunk.slice(1).toLowerCase();
-    });
-    return capitalizedChunks.join(" ");
-  };
+      return chunk.charAt(0).toUpperCase() + chunk.slice(1).toLowerCase()
+    })
+    return capitalizedChunks.join(" ")
+  }
 
   // Function to generate the pagination items
   const renderPaginationItems = () => {
-    const items = [];
-    const maxVisiblePages = 3; // Number of pages to show around current page
+    const items = []
+    const maxVisiblePages = 3 // Number of pages to show around current page
 
     // Always show first page
     items.push(
@@ -504,11 +497,11 @@ const AmbulancesScreen = () => {
           1
         </button>
       </li>
-    );
+    )
 
     // Calculate start and end pages to show around current page
-    let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+    let startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2))
+    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1)
 
     // Adjust if we're near the beginning
     if (startPage > 2) {
@@ -516,7 +509,7 @@ const AmbulancesScreen = () => {
         <li key="ellipsis-start" className="page-item disabled">
           <span className="page-link">...</span>
         </li>
-      );
+      )
     }
 
     // Add pages between start and end
@@ -532,7 +525,7 @@ const AmbulancesScreen = () => {
               {i}
             </button>
           </li>
-        );
+        )
       }
     }
 
@@ -542,7 +535,7 @@ const AmbulancesScreen = () => {
         <li key="ellipsis-end" className="page-item disabled">
           <span className="page-link">...</span>
         </li>
-      );
+      )
     }
 
     // Always show last page if there's more than one page
@@ -559,24 +552,24 @@ const AmbulancesScreen = () => {
             {totalPages}
           </button>
         </li>
-      );
+      )
     }
 
-    return items;
-  };
+    return items
+  }
 
   // Function to handle opening the details modal
   const openVehicleDetails = (vehicle: Ambulance) => {
-    setSelectedVehicle(vehicle);
-    setShowDetailsModal(true);
-  };
+    setSelectedVehicle(vehicle)
+    setShowDetailsModal(true)
+  }
 
   // Function to handle closing the details modal
   const closeVehicleDetails = () => {
-    setShowDetailsModal(false);
+    setShowDetailsModal(false)
     // Optional: clear the selected vehicle after a delay
-    setTimeout(() => setSelectedVehicle(null), 200);
-  };
+    setTimeout(() => setSelectedVehicle(null), 200)
+  }
 
   return (
     <div className="container mt-4">
@@ -682,7 +675,7 @@ const AmbulancesScreen = () => {
           style={{
             minHeight: "60vh",
             margin: "20px 0 40px 0",
-            padding: "20px",
+            padding: "20px"
           }}
         >
           {/* Loading indicator - centered vertically and horizontally */}
@@ -740,39 +733,39 @@ const AmbulancesScreen = () => {
                 AVAILABLE: {
                   color: "success",
                   icon: "check-circle-fill",
-                  label: "Available",
+                  label: "Available"
                 },
                 UNAVAILABLE_TEMPORARILY: {
                   color: "warning",
                   icon: "exclamation-triangle-fill",
-                  label: "Temporarily Unavailable",
+                  label: "Temporarily Unavailable"
                 },
                 DISPATCHED: {
                   color: "primary",
                   icon: "truck",
-                  label: "Dispatched",
+                  label: "Dispatched"
                 },
                 UNDER_MAINTENANCE: {
                   color: "info",
                   icon: "tools",
-                  label: "Under Maintenance",
+                  label: "Under Maintenance"
                 },
                 OUT_OF_SERVICE: {
                   color: "danger",
                   icon: "x-circle-fill",
-                  label: "Out of Service",
-                },
-              };
+                  label: "Out of Service"
+                }
+              }
 
               // Get config for current status or use a default
-              const status = vehicle?.status || "UNAVAILABLE_TEMPORARILY";
+              const status = vehicle?.status || "UNAVAILABLE_TEMPORARILY"
               const config = statusConfig[
                 status as keyof typeof statusConfig
               ] || {
                 color: "secondary",
                 icon: "question-circle",
-                label: toSentenceCase(status),
-              };
+                label: toSentenceCase(status)
+              }
 
               return (
                 <div key={vehicle.id} className="col-lg-4 col-md-6 mb-3">
@@ -796,7 +789,7 @@ const AmbulancesScreen = () => {
                               backgroundColor: "#28a745",
                               border: "2px solid #fff",
                               boxShadow: "0 0 2px #0002",
-                              verticalAlign: "middle",
+                              verticalAlign: "middle"
                             }}
                           ></span>
                         )}
@@ -867,7 +860,7 @@ const AmbulancesScreen = () => {
                     </div>
                   </div>
                 </div>
-              );
+              )
             })
           ) : (
             <div className="col-12 py-5 text-center">
@@ -1087,9 +1080,9 @@ const AmbulancesScreen = () => {
                     type="button"
                     className="btn btn-primary"
                     onClick={() => {
-                      closeVehicleDetails();
+                      closeVehicleDetails()
                       if (selectedVehicle) {
-                        openEditVehicleModal(selectedVehicle);
+                        openEditVehicleModal(selectedVehicle)
                       }
                     }}
                   >
@@ -1225,8 +1218,8 @@ const AmbulancesScreen = () => {
                           placeholder="Search for stations..."
                           value={stationSearchTerm}
                           onChange={(e) => {
-                            setStationSearchTerm(e.target.value);
-                            setShowStationDropdown(true);
+                            setStationSearchTerm(e.target.value)
+                            setShowStationDropdown(true)
                           }}
                           onFocus={() => setShowStationDropdown(true)}
                           required={!formData.assignedToId}
@@ -1475,8 +1468,8 @@ const AmbulancesScreen = () => {
                           placeholder="Search for stations..."
                           value={stationSearchTerm}
                           onChange={(e) => {
-                            setStationSearchTerm(e.target.value);
-                            setShowStationDropdown(true);
+                            setStationSearchTerm(e.target.value)
+                            setShowStationDropdown(true)
                           }}
                           onFocus={() => setShowStationDropdown(true)}
                           required={!formData.assignedToId}
@@ -1593,7 +1586,7 @@ const AmbulancesScreen = () => {
         ></div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default AmbulancesScreen;
+export default AmbulancesScreen
