@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useMemo } from "react"
 import {
   BarChart,
   Bar,
@@ -7,30 +7,26 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { GraphFilterOptions } from "../../schemas/graph";
+  ResponsiveContainer
+} from "recharts"
+import "bootstrap/dist/css/bootstrap.min.css"
+import { GraphFilterOptions } from "../../schemas/graph"
 
 const BarGraph = ({ onSelectChange, dataMap, selectedType }) => {
-  const [chartData, setChartData] = useState([]);
-
-  // Handle dropdown change
-  const handleSelectChange = (event) => {
-    const newValue = event.target.value;
-    onSelectChange(newValue);
-  };
-
-  // Convert dataMap to chart data format
-  useEffect(() => {
+  const formattedData = useMemo(() => {
     if (dataMap) {
-      const transformed = Object.entries(dataMap).map(([key, value]) => ({
+      return Object.entries(dataMap).map(([key, value]) => ({
         name: key,
-        added: value,
-      }));
-      setChartData(transformed);
+        added: value
+      }))
     }
-  }, [dataMap]);
+    return []
+  }, [dataMap])
+
+  const handleSelectChange = (event) => {
+    const newValue = event.target.value
+    onSelectChange(newValue)
+  }
 
   return (
     <div className="container-fluid">
@@ -50,7 +46,7 @@ const BarGraph = ({ onSelectChange, dataMap, selectedType }) => {
 
       <div style={{ width: "100%", height: "250px" }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
+          <BarChart data={formattedData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
             <YAxis allowDecimals={false} />
@@ -61,7 +57,7 @@ const BarGraph = ({ onSelectChange, dataMap, selectedType }) => {
         </ResponsiveContainer>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BarGraph;
+export default BarGraph

@@ -1,4 +1,3 @@
-import React from "react";
 import {
   LineChart,
   Line,
@@ -7,59 +6,70 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-} from "recharts";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { AmbulanceGraphVal } from "../../schemas/graph";
+  ResponsiveContainer
+} from "recharts"
+import "bootstrap/dist/css/bootstrap.min.css"
+import { GraphFilterOptions } from "../../schemas/graph"
 
-const data: AmbulanceGraphVal[] = [
-  { name: "Jan", added: 5, removed: 2 },
-  { name: "Feb", added: 7, removed: 3 },
-  { name: "Mar", added: 6, removed: 1 },
-  { name: "Apr", added: 8, removed: 4 },
-  { name: "May", added: 10, removed: 2 },
-];
+interface LineGraphProps {
+  onSelectChange: (newType: GraphFilterOptions) => void
+  dataMap: Record<string, any>[]
+  selectedType: GraphFilterOptions
+}
 
-const MyGraph = () => {
+const MyGraph = ({ onSelectChange, dataMap, selectedType }: LineGraphProps) => {
   return (
     <div className="container-fluid">
       <div className="card shadow-lg p-4 mt-3">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <select className="form-select w-auto">
-            <option>Days</option>
-            <option>Month</option>
-            <option>Yearly</option>
+          <select
+            className="form-select w-auto"
+            value={selectedType}
+            onChange={(e) =>
+              onSelectChange(e.target.value as GraphFilterOptions)
+            }
+          >
+            <option value={GraphFilterOptions.DAILY}>Daily</option>
+            <option value={GraphFilterOptions.MONTHLY}>Monthly</option>
+            <option value={GraphFilterOptions.YEARLY}>Yearly</option>
           </select>
         </div>
 
         <div style={{ width: "100%", height: "200px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data}>
+            <LineChart data={dataMap}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <XAxis dataKey="label" />
               <YAxis />
               <Tooltip />
               <Legend />
               <Line
                 type="monotone"
-                dataKey="added"
-                stroke="blue"
+                dataKey="pending"
+                stroke="orange"
                 strokeWidth={2}
-                name="Added Ambulances"
+                name="Pending"
               />
               <Line
                 type="monotone"
-                dataKey="removed"
+                dataKey="succeeded"
+                stroke="green"
+                strokeWidth={2}
+                name="Succeeded"
+              />
+              <Line
+                type="monotone"
+                dataKey="cancelled"
                 stroke="red"
                 strokeWidth={2}
-                name="Removed Ambulances"
+                name="Cancelled"
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MyGraph;
+export default MyGraph
